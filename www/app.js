@@ -209,14 +209,54 @@ function boot() {
       if (cached && cached.user) { S.user = cached.user; afterLogin(); }
       else render();
     })
-    .catch(function () {
+    .catch(function (err) {
       var d = store('boot');
-      if (d) { S.boot = d; S.campuses = d.campuses; S.settings = d; }
-      var cached = store('session');
-      if (cached && cached.user) { S.user = cached.user; S.tab = tabsFor()[0]; render(); }
-      else { S.boot = d || null; render(); }
-      say('Offline — showing the last data this phone saved.', null);
+      if (d) {
+        // We have data from last time — run offline rather than block the user.
+        S.boot = d; S.campuses = d.campuses; S.settings = d;
+        var cached = store('session');
+        if (cached && cached.user) { S.user = cached.user; S.tab = tabsFor()[0]; render(); }
+        else render();
+        say('Offline — showing the last data this phone saved.', null);
+        return;
+      }
+      // Nothing cached and no reachable backend: say so plainly.
+      renderError(err);
     });
+}
+
+/** Shown when the app cannot reach the backend and has nothing saved yet. */
+function renderError(err) {
+  var offline = !navigator.onLine;
+  paint(
+    '<div class="card">' +
+      '<h4>' + (offline ? 'No internet connection' : 'Cannot reach the backend') + '</h4>' +
+      '<p class="text-muted">' + (offline
+        ? 'Connect to wifi or mobile data and try again. Once you have signed in on this phone ' +
+          'once, the app will work offline.'
+        : 'The app reached the internet but your Apps Script did not answer.') + '</p>' +
+      '<button class="big-btn" id="e-retry">Try again</button>' +
+    '</div>' +
+    (offline ? '' :
+    '<div class="card">' +
+      '<h5>What to check</h5>' +
+      '<div class="row"><div><div>1. Open your URL in a browser</div>' +
+        '<div class="meta">It should say “Attendance API is running.” If it asks you to sign in ' +
+        'or shows an error page, the deployment access is not set to <em>Anyone</em>.</div></div></div>' +
+      '<div class="row"><div><div>2. Check the URL ends in /exec</div>' +
+        '<div class="meta">A /dev URL will never work from the app.</div></div></div>' +
+      '<div class="row"><div><div>3. Redeploy after any script change</div>' +
+        '<div class="meta">Deploy &gt; Manage deployments &gt; edit &gt; Version: New version.</div></div></div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<h5>Technical detail</h5>' +
+      '<p class="meta" style="word-break:break-all">URL: ' + esc(API_URL) + '</p>' +
+      '<p class="meta" style="word-break:break-all">Error: ' + esc(err && err.message || err) + '</p>' +
+    '</div>'));
+  $('e-retry').onclick = function () {
+    paint('<div class="center-note text-muted">Trying again…</div>');
+    setTimeout(boot, 200);
+  };
 }
 
 function tabsFor() {
@@ -734,6 +774,16 @@ function wireSetup() {
 }
 
 /* ── go ────────────────────────────────────────────────────────────────── */
+
+// If anything throws before the app paints, show it rather than sit on "Loading…".
+window.addEventListener('error', function (e) {
+  var app = document.getElementById('app');
+  if (app && /Loading/.test(app.textContent)) {
+    app.innerHTML = '<div class="card"><h4>The app hit an error starting up</h4>' +
+      '<p class="meta" style="word-break:break-all">' + esc(e.message) + '</p>' +
+      '<p class="meta">' + esc((e.filename || '').split('/').pop() + ':' + e.lineno) + '</p></div>';
+  }
+});
 
 if (Plug.LocalNotifications) Plug.LocalNotifications.requestPermissions().catch(function () {});
 document.addEventListener('DOMContentLoaded', boot);
