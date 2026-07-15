@@ -1,0 +1,109 @@
+/* Layout for the attendance app. The design system lives in app.css —
+   this file only positions things and adds the few app-specific pieces. */
+
+html, body { height: 100%; }
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.app { max-width: 720px; margin: 0 auto; padding: var(--space-4); }
+.screen { animation: fade .18s ease-out; }
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) {
+  .screen { animation: none; }
+  * { transition: none !important; }
+}
+
+.center-note { text-align: center; padding: var(--space-8) 0; }
+
+/* — top bar — */
+.topbar {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--space-3); margin-bottom: var(--space-3);
+}
+.topbar .who { font-size: 13px; }
+.topbar h4 { margin: 0; }
+
+/* — tabs — */
+.tabs {
+  display: flex; gap: 2px; margin-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-divider);
+  overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 13px; letter-spacing: .02em; white-space: nowrap;
+  padding: var(--space-2) var(--space-3);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+}
+.tab[aria-selected="true"] { color: var(--color-text); border-bottom-color: var(--color-accent); }
+
+/* — cards / rows — */
+.card {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  padding: var(--space-4); margin-bottom: var(--space-3);
+}
+.card + .hr { display: none; }
+.row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-3); padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+.row:last-child { border-bottom: 0; }
+.row .meta { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.stack { display: flex; flex-direction: column; gap: var(--space-3); }
+.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.field > label {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+/* — the big number — */
+.figure-xl { font-family: var(--font-heading); font-weight: 800; font-size: 56px; line-height: 1; }
+.bar { height: 6px; background: var(--color-neutral-300); margin-top: var(--space-2); }
+.bar > span { display: block; height: 100%; background: var(--color-accent); }
+
+.pill {
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  font-family: var(--font-heading); font-weight: 800;
+  padding: 2px 6px; background: var(--color-accent-200); color: var(--color-accent-800);
+}
+.pill.ok { background: var(--color-neutral-200); color: var(--color-neutral-800); }
+
+/* — check-in — */
+.big-btn {
+  width: 100%; padding: var(--space-6); font-size: 18px;
+  border: 2px solid var(--color-text); background: var(--color-text); color: var(--color-bg);
+  font-family: var(--font-heading); font-weight: 800; cursor: pointer;
+}
+.big-btn[disabled] { opacity: .4; cursor: not-allowed; }
+.big-btn.secondary { background: transparent; color: var(--color-text); }
+
+.selfie { width: 56px; height: 56px; object-fit: cover; border: 1px solid var(--color-neutral-300); }
+
+/* — banners — */
+.banner {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  font-size: 14px; background: var(--color-neutral-200); color: var(--color-text);
+  border-top: 2px solid var(--color-text);
+}
+.banner.err { background: var(--color-accent-100); color: var(--color-accent-800);
+              border-top-color: var(--color-accent); }
+.offline-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 21;
+  padding: calc(4px + env(safe-area-inset-top)) var(--space-4) 4px;
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  font-family: var(--font-heading); font-weight: 800;
+  background: var(--color-accent); color: #fff; text-align: center;
+}

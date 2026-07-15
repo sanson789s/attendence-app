@@ -1,0 +1,22 @@
+{
+  "name": "attendance-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Campus attendance — GPS check-in, student attendance, Google Sheets backend.",
+  "scripts": {
+    "android": "cap add android && cap sync android",
+    "build:apk": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/camera": "^6.1.2",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.2",
+    "@capacitor/geolocation": "^6.1.0",
+    "@capacitor/local-notifications": "^6.1.0",
+    "@capacitor/share": "^6.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}
