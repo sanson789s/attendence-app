@@ -150,11 +150,12 @@ function queueCount() { return (store('queue') || []).length; }
 
 function showOffline() {
   var n = queueCount();
-  $('offline').hidden = n === 0 && navigator.onLine;
-  $('offline').textContent = n
+  var bar = $('offline');
+  if (!bar) return;
+  bar.hidden = n === 0 && navigator.onLine;
+  bar.textContent = n
     ? n + (n === 1 ? ' check-in waiting to sync' : ' entries waiting to sync')
     : 'Offline — changes will sync when you reconnect';
-  $('offline-count').textContent = n;
 }
 
 function flushQueue() {
